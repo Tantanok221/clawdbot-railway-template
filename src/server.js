@@ -60,6 +60,8 @@ const XDG_CONFIG_HOME =
   process.env.XDG_CONFIG_HOME || path.join(STATE_DIR, "auth", "xdg");
 const RAILWAY_CONFIG_DIR =
   process.env.RAILWAY_CONFIG_DIR || path.join(XDG_CONFIG_HOME, "railway");
+const RAILWAY_HOME_DIR = path.join(STATE_DIR, "auth", "railway-home");
+const RAILWAY_HOME_LINK = path.join(os.homedir(), ".railway");
 process.env.GH_CONFIG_DIR = GH_CONFIG_DIR;
 process.env.XDG_CONFIG_HOME = XDG_CONFIG_HOME;
 process.env.RAILWAY_CONFIG_DIR = RAILWAY_CONFIG_DIR;
@@ -67,6 +69,20 @@ try {
   fs.mkdirSync(GH_CONFIG_DIR, { recursive: true });
   fs.mkdirSync(XDG_CONFIG_HOME, { recursive: true });
   fs.mkdirSync(RAILWAY_CONFIG_DIR, { recursive: true });
+  fs.mkdirSync(RAILWAY_HOME_DIR, { recursive: true });
+
+  // Railway CLI stores auth in ~/.railway (ignores XDG). Persist it on the volume.
+  try {
+    const st = fs.lstatSync(RAILWAY_HOME_LINK);
+    if (!st.isSymbolicLink()) {
+      const backup = `${RAILWAY_HOME_LINK}.bak`;
+      try { fs.rmSync(backup, { recursive: true, force: true }); } catch {}
+      fs.renameSync(RAILWAY_HOME_LINK, backup);
+      fs.symlinkSync(RAILWAY_HOME_DIR, RAILWAY_HOME_LINK);
+    }
+  } catch {
+    fs.symlinkSync(RAILWAY_HOME_DIR, RAILWAY_HOME_LINK);
+  }
 } catch {
   // best-effort
 }
