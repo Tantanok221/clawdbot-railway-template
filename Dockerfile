@@ -43,6 +43,8 @@ RUN pnpm ui:install && pnpm ui:build
 FROM node:22-bookworm
 ENV NODE_ENV=production
 ENV CHROME_BIN=/usr/bin/chromium
+ENV GH_CONFIG_DIR=/data/.openclaw/auth/gh
+ENV XDG_CONFIG_HOME=/data/.openclaw/auth/xdg
 ENV HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}
 
@@ -58,7 +60,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Runtime CLI dependencies used by OpenClaw sessions.
-RUN npm install -g clawhub @tantanok221/agentbudget @vercel/agent-browser \
+RUN npm install -g clawhub @tantanok221/agentbudget @vercel/agent-browser @infisical/cli \
   && npm cache clean --force
 
 # Turso CLI (https://docs.turso.tech/cli/installation)
