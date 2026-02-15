@@ -11,6 +11,7 @@ This repo packages **OpenClaw** for Railway with a small **/setup** web wizard s
 - **Import backup** from `/setup` (advanced recovery)
 - Runtime tooling preinstalled in image: `gh`, `clawhub`, `agentbudget`, `agent-browser`, `turso`, `railway`, `brew`, `infisical`, `chromium` (survives container restarts/redeploys)
 - CLI auth config persisted to Railway volume (`/data/.openclaw/auth`) via `GH_CONFIG_DIR`, `XDG_CONFIG_HOME`, and `RAILWAY_CONFIG_DIR`
+- Railway CLI home (`~/.railway`) is auto-symlinked to `/data/.openclaw/auth/railway-home` on startup to persist Railway login sessions
 
 ## How it works (high level)
 
