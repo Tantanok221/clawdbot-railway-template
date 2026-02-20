@@ -62,13 +62,13 @@ RUN apt-get update \
 
 # Warp Oz CLI (Linux standalone)
 RUN mkdir -p /etc/apt/keyrings \
-  && curl -fsSL https://app.warp.dev/linux/keys/warp.asc \
+  && curl -fsSL https://releases.warp.dev/linux/keys/warp.asc \
     | gpg --dearmor -o /etc/apt/keyrings/warp.gpg \
   && chmod a+r /etc/apt/keyrings/warp.gpg \
-  && echo "deb [signed-by=/etc/apt/keyrings/warp.gpg] https://app.warp.dev/linux/deb stable main" \
+  && echo "deb [signed-by=/etc/apt/keyrings/warp.gpg] https://releases.warp.dev/linux/deb stable main" \
     > /etc/apt/sources.list.d/warp.list \
   && apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends oz-stable \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends oz \
   && rm -rf /var/lib/apt/lists/*
 
 # Runtime CLI dependencies used by OpenClaw sessions.
