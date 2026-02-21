@@ -62,9 +62,30 @@ const RAILWAY_CONFIG_DIR =
   process.env.RAILWAY_CONFIG_DIR || path.join(XDG_CONFIG_HOME, "railway");
 const RAILWAY_HOME_DIR = path.join(STATE_DIR, "auth", "railway-home");
 const RAILWAY_HOME_LINK = path.join(os.homedir(), ".railway");
+
+// Oz/Warp CLI auth persistence (some auth artifacts are stored under ~/.warp).
+const OZ_HOME_DIR = path.join(STATE_DIR, "auth", "oz-home");
+const OZ_HOME_LINK = path.join(os.homedir(), ".warp");
+
 process.env.GH_CONFIG_DIR = GH_CONFIG_DIR;
 process.env.XDG_CONFIG_HOME = XDG_CONFIG_HOME;
 process.env.RAILWAY_CONFIG_DIR = RAILWAY_CONFIG_DIR;
+
+function ensurePersistentHomeLink(linkPath, targetDir) {
+  fs.mkdirSync(targetDir, { recursive: true });
+  try {
+    const st = fs.lstatSync(linkPath);
+    if (!st.isSymbolicLink()) {
+      const backup = `${linkPath}.bak`;
+      try { fs.rmSync(backup, { recursive: true, force: true }); } catch {}
+      fs.renameSync(linkPath, backup);
+      fs.symlinkSync(targetDir, linkPath);
+    }
+  } catch {
+    fs.symlinkSync(targetDir, linkPath);
+  }
+}
+
 try {
   fs.mkdirSync(GH_CONFIG_DIR, { recursive: true });
   fs.mkdirSync(XDG_CONFIG_HOME, { recursive: true });
@@ -72,17 +93,10 @@ try {
   fs.mkdirSync(RAILWAY_HOME_DIR, { recursive: true });
 
   // Railway CLI stores auth in ~/.railway (ignores XDG). Persist it on the volume.
-  try {
-    const st = fs.lstatSync(RAILWAY_HOME_LINK);
-    if (!st.isSymbolicLink()) {
-      const backup = `${RAILWAY_HOME_LINK}.bak`;
-      try { fs.rmSync(backup, { recursive: true, force: true }); } catch {}
-      fs.renameSync(RAILWAY_HOME_LINK, backup);
-      fs.symlinkSync(RAILWAY_HOME_DIR, RAILWAY_HOME_LINK);
-    }
-  } catch {
-    fs.symlinkSync(RAILWAY_HOME_DIR, RAILWAY_HOME_LINK);
-  }
+  ensurePersistentHomeLink(RAILWAY_HOME_LINK, RAILWAY_HOME_DIR);
+
+  // Oz/Warp CLI may store auth under ~/.warp. Persist it on the volume.
+  ensurePersistentHomeLink(OZ_HOME_LINK, OZ_HOME_DIR);
 } catch {
   // best-effort
 }
