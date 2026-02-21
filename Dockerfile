@@ -90,6 +90,11 @@ RUN mkdir -p /home/linuxbrew/.linuxbrew \
   && ln -sfn /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/brew \
   && HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew/Homebrew /usr/local/bin/brew --version
 
+# summarize CLI (via Homebrew tap)
+RUN HOMEBREW_NO_AUTO_UPDATE=1 brew tap steipete/tap \
+  && HOMEBREW_NO_AUTO_UPDATE=1 brew install summarize \
+  && summarize --help >/dev/null
+
 # `openclaw update` expects pnpm. Provide it in the runtime image.
 RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
 
