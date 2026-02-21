@@ -90,9 +90,8 @@ RUN mkdir -p /home/linuxbrew/.linuxbrew \
   && ln -sfn /home/linuxbrew/.linuxbrew/bin/brew /usr/local/bin/brew \
   && HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew/Homebrew /usr/local/bin/brew --version
 
-# summarize CLI (via Homebrew tap)
-RUN HOMEBREW_NO_AUTO_UPDATE=1 brew tap steipete/tap \
-  && HOMEBREW_NO_AUTO_UPDATE=1 brew install summarize \
+# summarize CLI (npm package; avoids unsupported root Homebrew install)
+RUN npm install -g @steipete/summarize \
   && summarize --help >/dev/null
 
 # `openclaw update` expects pnpm. Provide it in the runtime image.
